@@ -1,0 +1,45 @@
+entity JobPosting {
+  title String required minlength(3) maxlength(100),
+  description TextBlob,
+  closingDate LocalDate
+}
+
+entity Interviewee {
+  name String required minlength(3) maxlength(100),
+  contactInformation String,
+  resume Blob,
+  applicationDate LocalDate,
+  interviewStage InterviewStage required
+}
+
+enum InterviewStage {
+  APPLIED,
+  PHONE_SCREEN,
+  FIRST_INTERVIEW,
+  SECOND_INTERVIEW,
+  OFFER,
+  HIRED,
+  REJECTED
+}
+
+entity IntervieweeNote {
+  note TextBlob required,
+  createdAt Instant required
+}
+
+
+relationship ManyToOne {
+  Interviewee{jobPosting(title) required} to JobPosting
+}
+
+relationship OneToMany {
+  Interviewee{notes} to IntervieweeNote{interviewee required}
+}
+
+relationship ManyToOne {
+    IntervieweeNote{author(login)} to User with builtInEntity
+}
+
+service JobPosting, Interviewee, IntervieweeNote with serviceClass
+
+paginate JobPosting, Interviewee with pagination
